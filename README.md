@@ -36,6 +36,7 @@ list.on('value', value => {
 
 ## FirebaseStream
 ```js
+import Firebase from 'firebase';
 import { put } from 'redux-saga';
 import { FirebaseStream, FirebaseList } from 'kebakaran';
 
@@ -51,11 +52,11 @@ export default function* topUsersSaga() {
   try {
     while (true) {
       const users = yield stream.next();
+      yield put({
+        type: 'TOP_USERS',
+        users
+      });
     }
-    yield put({
-      type: 'TOP_USERS',
-      users
-    });
   } finally {
     stream.close();
     list.close();
