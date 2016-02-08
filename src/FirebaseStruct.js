@@ -21,9 +21,10 @@ export default class FirebaseStruct extends EventEmitter {
     Object.keys(fields).forEach(name => {
       this.data[name] = noValue;
       const ref = fields[name];
-      const listener = ref.on('value', snapshot => {
+      const listener = snapshot => {
         this.setField(name, snapshot.val());
-      });
+      };
+      ref.on('value', listener);
       this.refs.push({ ref, listener });
     });
   }

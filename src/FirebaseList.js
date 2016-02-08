@@ -21,8 +21,10 @@ export default class FirebaseList extends EventEmitter {
   }
 
   subscribe() {
-    this.childAddedListener = this.ref.on('child_added', ::this.onChildAdded);
-    this.childRemovedListener = this.ref.on('child_removed', ::this.onChildRemoved);
+    this.onChildAdded = ::this.onChildAdded;
+    this.onChildRemoved = ::this.onChildRemoved;
+    this.ref.on('child_added', this.onChildAdded);
+    this.ref.on('child_removed', this.onChildRemoved);
   }
 
   onChildAdded(c) {
@@ -74,8 +76,8 @@ export default class FirebaseList extends EventEmitter {
     }
 
     this.off('value');
-    this.ref.off('child_added', this.childAddedListener);
-    this.ref.off('child_removed', this.childRemovedListener);
+    this.ref.off('child_added', this.onChildAdded);
+    this.ref.off('child_removed', this.onChildRemoved);
   }
 
 }

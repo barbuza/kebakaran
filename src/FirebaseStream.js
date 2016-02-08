@@ -17,7 +17,8 @@ export default class FirebaseStream {
     this.sentValue = this.constructor.noValue;
     this.currentValue = this.constructor.noValue;
     this.resolve = null;
-    this.listener = this.ref.on('value', ::this.update);
+    this.update = ::this.update;
+    this.ref.on('value', this.update);
   }
 
   update(snapshotOrValue) {
@@ -50,7 +51,7 @@ export default class FirebaseStream {
   }
 
   close() {
-    this.ref.off('value', this.listener);
+    this.ref.off('value', this.update);
   }
 
 }
