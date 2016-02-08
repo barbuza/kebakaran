@@ -1,28 +1,38 @@
 import EventEmitter from 'eventemitter3';
 
-export default class RefMock extends EventEmitter {
+class SnapshotMock {
 
-  on(name, listener) {
-    super.on(name, listener);
-    return listener;
+  constructor(val, key) {
+    this._val = val;
+    this._key = key;
   }
 
+  val() {
+    return this._val;
+  }
+
+  key() {
+    return this._key;
+  }
+
+  forEach(...args) {
+    Object.keys(this._val).map(val => new SnapshotMock(undefined, val)).forEach(...args);
+  }
+
+}
+
+export default class RefMock extends EventEmitter {
+
   emitValue(val) {
-    this.emit('value', {
-      val: () => val,
-    });
+    this.emit('value', new SnapshotMock(val));
   }
 
   emitChildAdded(key) {
-    this.emit('child_added', {
-      key: () => key,
-    });
+    this.emit('child_added', new SnapshotMock(undefined, key));
   }
 
   emitChildRemoved(key) {
-    this.emit('child_removed', {
-      key: () => key,
-    });
+    this.emit('child_removed', new SnapshotMock(undefined, key));
   }
 
 }

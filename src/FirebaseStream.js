@@ -8,14 +8,14 @@ function snapshotValue(snapshotOrValue) {
   return snapshotOrValue;
 }
 
-export default class FirebaseStream {
+const NO_VALUE = Symbol();
 
-  static noValue = Symbol();
+export default class FirebaseStream {
 
   constructor(ref) {
     this.ref = ref;
-    this.sentValue = this.constructor.noValue;
-    this.currentValue = this.constructor.noValue;
+    this.sentValue = NO_VALUE;
+    this.currentValue = NO_VALUE;
     this.resolve = null;
     this.update = ::this.update;
     this.ref.on('value', this.update);

@@ -3,13 +3,13 @@ import Firebase from 'firebase';
 
 import { FirebaseList } from '../src';
 
-test.skip('Firebase', t => {
+test.skip('FirebaseList', t => {
   t.plan(2);
 
   const list = new FirebaseList(new Firebase('https://kebakaran-test.firebaseio.com/list'), key => ({
     name: new Firebase(`https://kebakaran-test.firebaseio.com/names/${key}`),
     count: new Firebase(`https://kebakaran-test.firebaseio.com/counts/${key}`),
-  }));
+  }), 'id');
 
   let step = 1;
 
@@ -32,6 +32,8 @@ test.skip('Firebase', t => {
       ]);
 
       list.close();
+      Firebase.goOffline();
+
       t.end();
     }
   });

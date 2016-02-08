@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 import FirebaseStruct from './FirebaseStruct';
 
-const noValue = Symbol();
+const NO_VALUE = Symbol();
 
 export default class FirebaseList extends EventEmitter {
 
@@ -10,21 +10,28 @@ export default class FirebaseList extends EventEmitter {
   items = {};
   values = {};
 
-  constructor(ref, getFields, idField = 'id') {
+  constructor(ref, getFields, idField = 'id', instant = false) {
     super();
 
     this.ref = ref;
     this.getFields = getFields;
     this.idField = idField;
+    this.instant = instant;
+    this.hasInitialData = !instant;
 
     this.subscribe();
   }
 
   subscribe() {
-    this.onChildAdded = ::this.onChildAdded;
-    this.onChildRemoved = ::this.onChildRemoved;
-    this.ref.on('child_added', this.onChildAdded);
-    this.ref.on('child_removed', this.onChildRemoved);
+    if (this.instant) {
+      this.onValue = ::this.onValue;
+      this.ref.on('value', this.onValue);
+    } else {
+      this.onChildAdded = ::this.onChildAdded;
+      this.onChildRemoved = ::this.onChildRemoved;
+      this.ref.on('child_added', this.onChildAdded);
+      this.ref.on('child_removed', this.onChildRemoved);
+    }
   }
 
   on(name, listener, context) {
@@ -34,39 +41,68 @@ export default class FirebaseList extends EventEmitter {
     }
   }
 
+  onValue(snapshot) {
+    const newKeys = [];
+    snapshot.forEach(itemSnapshot => {
+      newKeys.push(itemSnapshot.key());
+    });
+    for (const key of newKeys) {
+      if (this.keys.indexOf(key) === -1) {
+        this.addChild(key);
+      }
+    }
+    for (const key of this.keys) {
+      if (newKeys.indexOf(key) === -1) {
+        this.removeChild(key);
+      }
+    }
+    this.keys = newKeys;
+    this.hasInitialData = true;
+    this.flush();
+  }
+
   onChildAdded(c) {
     const key = c.key();
-    const item = new FirebaseStruct(this.getFields, key);
-
-    this.values[key] = noValue;
-    this.keys.push(key);
-    this.items[key] = item;
-
-    item.on('value', value => {
-      this.onValue(key, value);
-    });
+    this.addChild(key);
   }
 
   onChildRemoved(c) {
     const key = c.key();
+    this.removeChild(key);
+    this.flush();
+  }
 
+  addChild(key) {
+    const item = new FirebaseStruct(this.getFields, key);
+
+    this.values[key] = NO_VALUE;
+    this.keys.push(key);
+    this.items[key] = item;
+
+    item.on('value', value => {
+      this.onItemValue(key, value);
+    });
+  }
+
+  removeChild(key) {
     this.items[key].close();
 
     delete this.items[key];
     delete this.values[key];
     this.keys.splice(this.keys.indexOf(key), 1);
-
-    this.flush();
   }
 
-  onValue(key, item) {
+  onItemValue(key, item) {
     this.values[key] = item;
     this.flush();
   }
 
   hasData() {
+    if (!this.hasInitialData) {
+      return false;
+    }
     for (const key of this.keys) {
-      if (this.values[key] === noValue) {
+      if (this.values[key] === NO_VALUE) {
         return false;
       }
     }
@@ -89,8 +125,13 @@ export default class FirebaseList extends EventEmitter {
     }
 
     this.off('value');
-    this.ref.off('child_added', this.onChildAdded);
-    this.ref.off('child_removed', this.onChildRemoved);
+
+    if (this.instant) {
+      this.ref.off('value', this.onValue);
+    } else {
+      this.ref.off('child_added', this.onChildAdded);
+      this.ref.off('child_removed', this.onChildRemoved);
+    }
   }
 
 }
