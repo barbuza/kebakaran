@@ -38,13 +38,13 @@ export default class FirebaseList extends EventEmitter {
     const key = c.key();
     const item = new FirebaseStruct(this.getFields, key);
 
-    item.on('value', value => {
-      this.onValue(key, value);
-    });
-
     this.values[key] = noValue;
     this.keys.push(key);
     this.items[key] = item;
+
+    item.on('value', value => {
+      this.onValue(key, value);
+    });
 
     this.flush();
   }
