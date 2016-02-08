@@ -27,6 +27,13 @@ export default class FirebaseList extends EventEmitter {
     this.ref.on('child_removed', this.onChildRemoved);
   }
 
+  on(name, listener, context) {
+    super.on(name, listener, context);
+    if (name === 'value' && this.hasData()) {
+      listener.call(context, this.data);
+    }
+  }
+
   onChildAdded(c) {
     const key = c.key();
     const item = new FirebaseStruct(this.getFields, key);
@@ -59,15 +66,20 @@ export default class FirebaseList extends EventEmitter {
     this.flush();
   }
 
-  flush() {
+  hasData() {
     for (const key of this.keys) {
       if (this.values[key] === noValue) {
-        return;
+        return false;
       }
     }
+    return true;
+  }
 
-    const value = this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
-    this.emit('value', value);
+  flush() {
+    if (this.hasData()) {
+      const value = this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
+      this.emit('value', value);
+    }
   }
 
   close() {

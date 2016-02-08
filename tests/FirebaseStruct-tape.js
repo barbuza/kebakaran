@@ -32,7 +32,7 @@ test('FirebaseStruct close', t => {
 });
 
 test('FirebaseStruct basics', t => {
-  t.plan(2);
+  t.plan(3);
 
   const { nameRef, countRef, struct } = setup();
 
@@ -54,4 +54,11 @@ test('FirebaseStruct basics', t => {
   });
 
   countRef.emitValue(2);
+
+  struct.on('value', value => {
+    t.deepEqual(value, {
+      name: 'foo',
+      count: 2,
+    });
+  });
 });

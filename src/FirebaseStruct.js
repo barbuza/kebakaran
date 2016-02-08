@@ -16,6 +16,13 @@ export default class FirebaseStruct extends EventEmitter {
     this.subscribe();
   }
 
+  on(name, listener, context) {
+    super.on(name, listener, context);
+    if (name === 'value' && this.hasData()) {
+      listener.call(context, this.data);
+    }
+  }
+
   subscribe() {
     const fields = this.getFields(this.key);
     Object.keys(fields).forEach(name => {
@@ -34,15 +41,21 @@ export default class FirebaseStruct extends EventEmitter {
     this.flush();
   }
 
-  flush() {
+  hasData() {
     for (const name in this.data) {
       if (this.data.hasOwnProperty(name)) {
         if (this.data[name] === noValue) {
-          return;
+          return false;
         }
       }
     }
-    this.emit('value', this.data);
+    return true;
+  }
+
+  flush() {
+    if (this.hasData()) {
+      this.emit('value', this.data);
+    }
   }
 
   close() {
