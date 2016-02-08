@@ -45,8 +45,6 @@ export default class FirebaseList extends EventEmitter {
     item.on('value', value => {
       this.onValue(key, value);
     });
-
-    this.flush();
   }
 
   onChildRemoved(c) {
@@ -81,7 +79,7 @@ export default class FirebaseList extends EventEmitter {
 
   flush() {
     if (this.hasData()) {
-      this.emit('vaue', this.data);
+      this.emit('value', this.data);
     }
   }
 

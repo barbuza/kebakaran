@@ -1,6 +1,6 @@
 {
   "name": "kebakaran",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "high level utilities for firebase interaction",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "eslint-config-airbnb": "^5.0.0",
     "eslint-plugin-react": "^3.16.1",
     "faucet": "0.0.1",
+    "firebase": "^2.4.0",
     "raf": "^3.1.0",
     "tape": "^4.4.0"
   },
