@@ -10,11 +10,12 @@ export default class FirebaseList extends EventEmitter {
   items = {};
   values = {};
 
-  constructor(ref, getFields) {
+  constructor(ref, getFields, idField = 'id') {
     super();
 
     this.ref = ref;
     this.getFields = getFields;
+    this.idField = idField;
 
     this.subscribe();
   }
@@ -63,7 +64,7 @@ export default class FirebaseList extends EventEmitter {
       }
     }
 
-    const value = this.keys.map(key => this.values[key]);
+    const value = this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
     this.emit('value', value);
   }
 

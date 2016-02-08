@@ -21,12 +21,15 @@ test('FirebaseList+FirebaseStream', t => {
     listRef.emitChildAdded('foo');
     nameRefs.foo.emitValue('foo');
 
-    t.deepEqual(await stream.nextPromise(), [{ name: 'foo' }]);
+    t.deepEqual(await stream.nextPromise(), [{ name: 'foo', id: 'foo' }]);
 
     listRef.emitChildAdded('bar');
     nameRefs.bar.emitValue('bar');
 
-    t.deepEqual(await stream.nextPromise(), [{ name: 'foo' }, { name: 'bar' }]);
+    t.deepEqual(
+      await stream.nextPromise(),
+      [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }]
+    );
 
     await stream.nextPromise();
     t.fail();

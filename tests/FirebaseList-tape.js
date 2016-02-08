@@ -36,12 +36,12 @@ test('FirebaseList', t => {
   t.equal(nameRefs.bar.listeners('value').length, 1);
 
   listRef.once('value', value => {
-    t.deepEqual(value, [{ name: 'foo' }, { name: 'bar' }]);
+    t.deepEqual(value, [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }]);
   });
   nameRefs.bar.emitValue('bar');
 
   listRef.once('value', value => {
-    t.deepEqual(value, [{ name: 'bar' }]);
+    t.deepEqual(value, [{ name: 'bar', id: 'bar' }]);
   });
   listRef.emitChildRemoved('foo');
   t.equal(nameRefs.foo.listeners('value').length, 0);
