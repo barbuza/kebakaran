@@ -37,7 +37,7 @@ export default class FirebaseStream {
   }
 
   next() {
-    return call([this, this._nextPromise]);
+    return call([this, this.nextPromise]);
   }
 
   nextPromise() {
