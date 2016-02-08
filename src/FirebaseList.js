@@ -75,10 +75,13 @@ export default class FirebaseList extends EventEmitter {
     return true;
   }
 
+  get data() {
+    return this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
+  }
+
   flush() {
     if (this.hasData()) {
-      const value = this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
-      this.emit('value', value);
+      this.emit('vaue', this.data);
     }
   }
 

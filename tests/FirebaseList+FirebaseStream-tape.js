@@ -18,6 +18,8 @@ test('FirebaseList+FirebaseStream', t => {
   });
 
   (async () => {
+    t.deepEqual(await stream.nextPromise(), []);
+
     listRef.emitChildAdded('foo');
     nameRefs.foo.emitValue('foo');
 
