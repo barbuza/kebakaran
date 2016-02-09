@@ -1,6 +1,6 @@
 {
   "name": "kebakaran",
-  "version": "0.1.14",
+  "version": "0.1.13",
   "description": "high level utilities for firebase interaction",
   "main": "index.js",
   "scripts": {
