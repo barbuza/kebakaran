@@ -1,6 +1,6 @@
 {
   "name": "kebakaran",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "high level utilities for firebase interaction",
   "main": "index.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "firebase": "^2.4.0",
     "nyc": "^5.6.0",
     "raf": "^3.1.0",
+    "redux": "^3.3.1",
     "tape": "^4.4.0"
   },
   "dependencies": {

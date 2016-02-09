@@ -37,7 +37,7 @@ export default class FirebaseStruct extends EventEmitter {
   }
 
   setField(name, value) {
-    this.data[name] = value;
+    this.data = { ...this.data, [name]: value };
     this.flush();
   }
 
