@@ -1,4 +1,4 @@
-# kebakaran [![Build Status](https://travis-ci.org/barbuza/kebakaran.svg?branch=master)](https://travis-ci.org/barbuza/kebakaran)
+# kebakaran [![Build Status](https://travis-ci.org/barbuza/kebakaran.svg?branch=master)](https://travis-ci.org/barbuza/kebakaran) [![Coverage Status](https://coveralls.io/repos/github/barbuza/kebakaran/badge.svg?branch=master)](https://coveralls.io/github/barbuza/kebakaran?branch=master) [![npm version](https://badge.fury.io/js/kebakaran.svg)](https://badge.fury.io/js/kebakaran)
 
 high level utilities for firebase interaction
 

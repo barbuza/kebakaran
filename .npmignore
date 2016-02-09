@@ -4,3 +4,6 @@
 /src
 /tests
 /.travis.yml
+/coverage
+/.nyc_output
+/.coveralls.yml
