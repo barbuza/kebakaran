@@ -35,6 +35,8 @@ test('FirebaseList', t => {
       Firebase.goOffline();
 
       t.end();
+
+      process.exit(0);
     }
   });
 });

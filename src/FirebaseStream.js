@@ -1,5 +1,5 @@
-import { call } from 'redux-saga';
-import asap from 'asap';
+import { cps } from 'redux-saga';
+import { sagaCbLoose, sagaCbStrict } from './sagaCb';
 
 function snapshotValue(snapshotOrValue) {
   if (typeof snapshotOrValue === 'object' && typeof snapshotOrValue.val === 'function') {
@@ -8,50 +8,23 @@ function snapshotValue(snapshotOrValue) {
   return snapshotOrValue;
 }
 
-const NO_VALUE = Symbol();
-
 export class FirebaseStream {
 
-  constructor(ref) {
+  constructor(ref, loose = true) {
+    const { listener, callback } = loose ? sagaCbLoose() : sagaCbStrict();
+    this.listener = val => listener(snapshotValue(val));
+    this.callback = callback;
+
     this.ref = ref;
-    this.sentValue = NO_VALUE;
-    this.currentValue = NO_VALUE;
-    this.resolve = null;
-    this.update = ::this.update;
-    this.ref.on('value', this.update);
-  }
-
-  update(snapshotOrValue) {
-    this.currentValue = snapshotValue(snapshotOrValue);
-    this.flush();
-  }
-
-  flush() {
-    if (this.resolve && this.promise && this.sentValue !== this.currentValue) {
-      const { resolve } = this;
-      this.promise = null;
-      this.resolve = null;
-      this.sentValue = this.currentValue;
-      resolve(this.sentValue);
-    }
+    this.ref.on('value', this.listener);
   }
 
   next() {
-    return call([this, this.nextPromise]);
-  }
-
-  nextPromise() {
-    if (!this.promise) {
-      this.promise = new Promise(resolvePromise => {
-        this.resolve = resolvePromise;
-        asap(() => this.flush());
-      });
-    }
-    return this.promise;
+    return cps(this.callback);
   }
 
   close() {
-    this.ref.off('value', this.update);
+    this.ref.off('value', this.listener);
   }
 
 }
