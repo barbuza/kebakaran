@@ -67,4 +67,3 @@ test('FirebaseStream strict', t => {
   ref.emitValue(2);
   ref.emitValue(3);
 });
-
