@@ -1,4 +1,4 @@
-# kebakaran
+# kebakaran [![Build Status](https://travis-ci.org/barbuza/kebakaran.svg?branch=master)](https://travis-ci.org/barbuza/kebakaran)
 
 high level utilities for firebase interaction
 

@@ -3,3 +3,4 @@
 /.eslintrc
 /src
 /tests
+/.travis.yml
