@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "eventemitter3": "^1.1.1"
+    "eventemitter3": "^1.1.1",
+    "invariant": "^2.2.0"
   }
 }
