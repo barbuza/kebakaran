@@ -1,9 +1,9 @@
 import test from 'tape';
 import Firebase from 'firebase';
 
-import { FirebaseList } from '../src';
+import { FirebaseList } from '../src/index';
 
-test.skip('FirebaseList', t => {
+test('FirebaseList', t => {
   t.plan(2);
 
   const list = new FirebaseList(new Firebase('https://kebakaran-test.firebaseio.com/list'), key => ({

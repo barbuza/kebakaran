@@ -1,7 +1,7 @@
 import test from 'tape';
 
 import RefMock from './RefMock';
-import { FirebaseStruct } from '../src';
+import { FirebaseStruct } from '../src/index';
 
 function setup() {
   const nameRef = new RefMock();

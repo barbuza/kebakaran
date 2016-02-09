@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 const noValue = Symbol();
 
-export default class FirebaseStruct extends EventEmitter {
+export class FirebaseStruct extends EventEmitter {
 
   refs = [];
   data = {};

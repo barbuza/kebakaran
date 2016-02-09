@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3';
 
-import FirebaseStruct from './FirebaseStruct';
+import { FirebaseStruct } from './FirebaseStruct';
 
 const NO_VALUE = Symbol();
 
-export default class FirebaseList extends EventEmitter {
+export class FirebaseList extends EventEmitter {
 
   keys = [];
   items = {};

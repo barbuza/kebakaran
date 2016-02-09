@@ -10,7 +10,7 @@ function snapshotValue(snapshotOrValue) {
 
 const NO_VALUE = Symbol();
 
-export default class FirebaseStream {
+export class FirebaseStream {
 
   constructor(ref) {
     this.ref = ref;

@@ -2,7 +2,7 @@ import test from 'tape';
 import raf from 'raf';
 
 import RefMock from './RefMock';
-import { FirebaseList, FirebaseStream } from '../src';
+import { FirebaseList, FirebaseStream } from '../src/index';
 
 test('FirebaseList+FirebaseStream', t => {
   const nameRefs = {
@@ -34,6 +34,7 @@ test('FirebaseList+FirebaseStream', t => {
     );
 
     await stream.nextPromise();
+    /* istanbul ignore next */
     t.fail();
   })();
 });
