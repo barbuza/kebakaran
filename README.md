@@ -13,7 +13,7 @@ const userId = 'foo';
 const struct = new FirebaseStruct({
   name: new Firebase(`.../users/${userId}/name`),
   isOnline: new Firebase(`.../presence/${userId}`),
-}), '1');
+});
 
 struct.on('value', value => {
   // value === { name: ... , isOnline: ... }
