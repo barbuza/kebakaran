@@ -1,3 +1,5 @@
+import invariant from 'invariant';
+
 import { Emitter } from './Emitter';
 import { snapshotValue } from './snapshotValue';
 
@@ -8,6 +10,8 @@ const NO_VALUE = Symbol();
 export class FirebaseStruct extends Emitter {
 
   constructor(fields) {
+    invariant(fields, 'FirebaseStruct first arg is required');
+
     super();
 
     this.fields = fields;
@@ -63,4 +67,8 @@ export class FirebaseStruct extends Emitter {
     this.reset();
   }
 
+}
+
+export function struct(fields) {
+  return new FirebaseStruct(fields);
 }

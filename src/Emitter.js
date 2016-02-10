@@ -7,17 +7,17 @@ export class Emitter extends EventEmitter {
 
   hasData() {
     /* istanbul ignore next */
-    invariant('not implemented');
+    invariant(false, 'not implemented');
   }
 
   subscribe() {
     /* istanbul ignore next */
-    invariant('not implemented');
+    invariant(false, 'not implemented');
   }
 
   close() {
     /* istanbul ignore next */
-    invariant('not implemented');
+    invariant(false, 'not implemented');
   }
 
   subscribeIfNeeded() {
@@ -40,24 +40,31 @@ export class Emitter extends EventEmitter {
       listener.call(context, this.data);
     }
     this.subscribeIfNeeded();
+    return this;
   }
 
   off(name, listener, context, once) {
-    this.removeListener(name, listener, context, once);
-  }
-
-  removeListener(name, listener, context, once) {
     super.removeListener(name, listener, context, once);
     this.unsubscribeIfNeeded();
+    return this;
   }
 
   once(name, listener, context) {
     if (name === 'value' && this.hasData()) {
       listener.call(context, this.data);
-      return;
+    } else {
+      super.once(name, listener, context);
+      this.subscribeIfNeeded();
     }
-    super.once(name, listener, context);
-    this.subscribeIfNeeded();
+    return this;
   }
 
+  removeListener(name, listener, context, once) {
+    return this.off(name, listener, context, once);
+  }
+
+  addListener() {
+    /* istanbul ignore next */
+    invariant(false, 'use .on() instead');
+  }
 }

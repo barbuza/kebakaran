@@ -1,3 +1,5 @@
+/* eslint no-constant-condition: 0 */
+
 import test from 'tape';
 import { createStore, applyMiddleware } from 'redux';
 import sagaMiddleware, { cps, call } from 'redux-saga';

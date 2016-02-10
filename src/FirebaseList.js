@@ -12,10 +12,11 @@ const getKey = snapshot => snapshot.key();
 export class FirebaseList extends Emitter {
 
   constructor(ref, mapChild, { idField = 'id', instant = true, mapKey = getKey } = {}) {
-    super();
-
     invariant(ref, 'FirebaseList first arg is required');
-    invariant(typeof mapChild === 'function', 'FirebaseList second arg must be function');
+    invariant(typeof mapChild === 'function', 'FirebaseList second arg must be a function');
+    invariant(typeof mapKey === 'function', 'FirebaseList `mapKey` option must be a function');
+
+    super();
 
     this.ref = ref;
     this.mapChild = mapChild;
@@ -36,14 +37,11 @@ export class FirebaseList extends Emitter {
   subscribe() {
     if (this.instant) {
       debug('subscribe instant');
-      this.onValue = ::this.onValue;
-      this.ref.on('value', this.onValue);
+      this.ref.on('value', this.onValue, this);
     } else {
       debug('subscribe');
-      this.onChildAdded = ::this.onChildAdded;
-      this.onChildRemoved = ::this.onChildRemoved;
-      this.ref.on('child_added', this.onChildAdded);
-      this.ref.on('child_removed', this.onChildRemoved);
+      this.ref.on('child_added', this.onChildAdded, this);
+      this.ref.on('child_removed', this.onChildRemoved, this);
     }
   }
 
@@ -138,13 +136,17 @@ export class FirebaseList extends Emitter {
     }
 
     if (this.instant) {
-      this.ref.off('value', this.onValue);
+      this.ref.off('value', this.onValue, this);
     } else {
-      this.ref.off('child_added', this.onChildAdded);
-      this.ref.off('child_removed', this.onChildRemoved);
+      this.ref.off('child_added', this.onChildAdded, this);
+      this.ref.off('child_removed', this.onChildRemoved, this);
     }
 
     this.reset();
   }
 
+}
+
+export function list(ref, mapChild, options) {
+  return new FirebaseList(ref, mapChild, options);
 }
