@@ -4,13 +4,15 @@ import { FirebaseStruct } from './FirebaseStruct';
 
 const NO_VALUE = Symbol();
 
+const getKey = snapshot => snapshot.key();
+
 export class FirebaseList extends EventEmitter {
 
   keys = [];
   items = {};
   values = {};
 
-  constructor(ref, getFields, idField = 'id', instant = false) {
+  constructor(ref, getFields, idField = 'id', instant = false, mapKey = getKey) {
     super();
 
     this.ref = ref;
@@ -18,6 +20,7 @@ export class FirebaseList extends EventEmitter {
     this.idField = idField;
     this.instant = instant;
     this.hasInitialData = !instant;
+    this.mapKey = mapKey;
 
     this.subscribe();
   }
@@ -44,7 +47,7 @@ export class FirebaseList extends EventEmitter {
   onValue(snapshot) {
     const newKeys = [];
     snapshot.forEach(itemSnapshot => {
-      newKeys.push(itemSnapshot.key());
+      newKeys.push(this.mapKey(itemSnapshot));
     });
     for (const key of newKeys) {
       if (this.keys.indexOf(key) === -1) {
@@ -62,12 +65,12 @@ export class FirebaseList extends EventEmitter {
   }
 
   onChildAdded(c) {
-    const key = c.key();
+    const key = this.mapKey(c);
     this.addChild(key);
   }
 
   onChildRemoved(c) {
-    const key = c.key();
+    const key = this.mapKey(c);
     this.removeChild(key);
     this.flush();
   }
