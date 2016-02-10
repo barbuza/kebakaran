@@ -8,9 +8,11 @@ high level utilities for firebase interaction
 import Firebase from 'firebase';
 import { FirebaseStruct } from 'kebakaran';
 
-const struct = new FirebaseStruct(key => ({
-  name: new Firebase(`.../users/${key}/name`),
-  isOnline: new Firebase(`.../presence/${key}`),
+const userId = 'foo';
+
+const struct = new FirebaseStruct({
+  name: new Firebase(`.../users/${userId}/name`),
+  isOnline: new Firebase(`.../presence/${userId}`),
 }), '1');
 
 struct.on('value', value => {
@@ -22,9 +24,9 @@ struct.on('value', value => {
 
 ```js
 import Firebase from 'firebase';
-import { FirebaseList } from 'kebakaran';
+import { FirebaseList, FirebaseStruct } from 'kebakaran';
 
-const list = new FirebaseList(new Firebase('.../top-users'), key => ({
+const list = new FirebaseList(new Firebase('.../top-users'), key => new FirebaseStruct({
   name: new Firebase(`.../users/${key}/name`),
   isOnline: new Firebase(`.../presence/${key}`),
 }));
@@ -38,11 +40,11 @@ list.on('value', value => {
 ```js
 import Firebase from 'firebase';
 import { put } from 'redux-saga';
-import { FirebaseStream, FirebaseList } from 'kebakaran';
+import { FirebaseStream, FirebaseList, FirebaseStruct } from 'kebakaran';
 
 export default function* topUsersSaga() {
 
-  const list = new FirebaseList(new Firebase('.../top-users'), key => ({
+  const list = new FirebaseList(new Firebase('.../top-users'), key => new FirebaseStruct({
     name: new Firebase(`.../users/${key}/name`),
     isOnline: new Firebase(`.../presence/${key}`),
   }));

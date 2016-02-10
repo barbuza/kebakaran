@@ -1,7 +1,7 @@
 import test from 'tape';
 
 import RefMock from './RefMock';
-import { FirebaseList } from '../src/index';
+import { FirebaseList, FirebaseStruct } from '../src/index';
 
 test('FirebaseList', t => {
   t.plan(15);
@@ -11,9 +11,9 @@ test('FirebaseList', t => {
   nameRefs.foo = new RefMock();
   nameRefs.bar = new RefMock();
 
-  const list = new FirebaseList(listRef, key => ({
+  const list = new FirebaseList(listRef, key => new FirebaseStruct({
     name: nameRefs[key],
-  }));
+  }), { instant: false });
 
   let step = 1;
   list.on('value', value => {
@@ -79,9 +79,9 @@ test('FirebaseList instant', t => {
   nameRefs.foo = new RefMock();
   nameRefs.bar = new RefMock();
 
-  const list = new FirebaseList(listRef, key => ({
+  const list = new FirebaseList(listRef, key => new FirebaseStruct({
     name: nameRefs[key],
-  }), 'id', true);
+  }));
 
   let step = 1;
   list.on('value', value => {
@@ -125,13 +125,15 @@ test('FirebaseList instant', t => {
 
 test('FirebaseList listeners', t => {
   const listRef = new RefMock();
-  const list = new FirebaseList(listRef, () => null, 'id', false);
+  const list = new FirebaseList(listRef, () => null, { instant: false });
+
+  list.on('value', () => null);
 
   t.equal(listRef.listeners('child_added').length, 1);
   t.equal(listRef.listeners('child_removed').length, 1);
   t.equal(listRef.listeners('value').length, 0);
 
-  list.close();
+  list.off('value');
 
   t.equal(listRef.listeners('child_added').length, 0);
   t.equal(listRef.listeners('child_removed').length, 0);
@@ -142,13 +144,16 @@ test('FirebaseList listeners', t => {
 
 test('FirebaseList instant listeners', t => {
   const listRef = new RefMock();
-  const list = new FirebaseList(listRef, () => null, 'id', true);
+  const list = new FirebaseList(listRef, () => null);
+  const listener = () => null;
+
+  list.on('value', listener);
 
   t.equal(listRef.listeners('child_added').length, 0);
   t.equal(listRef.listeners('child_removed').length, 0);
   t.equal(listRef.listeners('value').length, 1);
 
-  list.close();
+  list.off('value', listener);
 
   t.equal(listRef.listeners('child_added').length, 0);
   t.equal(listRef.listeners('child_removed').length, 0);
@@ -160,13 +165,15 @@ test('FirebaseList instant listeners', t => {
 test('FirebaseList close', t => {
   const listRef = new RefMock();
   const nameRef = new RefMock();
-  const list = new FirebaseList(listRef, () => ({ name: nameRef }));
+  const list = new FirebaseList(listRef, () => nameRef, { instant: false });
+
+  list.on('value', () => null);
 
   listRef.emitChildAdded('foo');
 
   t.equal(nameRef.listeners('value').length, 1);
 
-  list.close();
+  list.off('value');
 
   t.equal(nameRef.listeners('value').length, 0);
 

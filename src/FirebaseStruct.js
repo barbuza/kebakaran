@@ -1,42 +1,39 @@
-import EventEmitter from 'eventemitter3';
+import { Emitter } from './Emitter';
+import { snapshotValue } from './snapshotValue';
 
-const noValue = Symbol();
+const debug = require('debug')('kebakaran:FirebaseStruct');
 
-export class FirebaseStruct extends EventEmitter {
+const NO_VALUE = Symbol();
 
-  refs = [];
-  data = {};
+export class FirebaseStruct extends Emitter {
 
-  constructor(getFields, key) {
+  constructor(fields) {
     super();
 
-    this.getFields = getFields;
-    this.key = key;
+    this.fields = fields;
 
-    this.subscribe();
+    this.reset();
   }
 
-  on(name, listener, context) {
-    super.on(name, listener, context);
-    if (name === 'value' && this.hasData()) {
-      listener.call(context, this.data);
-    }
+  reset() {
+    this.refs = [];
+    this.data = Object.keys(this.fields).reduce((acc, key) => ({ ...acc, [key]: NO_VALUE }), {});
   }
 
   subscribe() {
-    const fields = this.getFields(this.key);
-    Object.keys(fields).forEach(name => {
-      this.data[name] = noValue;
-      const ref = fields[name];
+    debug('subscribe');
+    Object.keys(this.fields).forEach(name => {
+      const ref = this.fields[name];
       const listener = snapshot => {
-        this.setField(name, snapshot.val());
+        this.setField(name, snapshotValue(snapshot));
       };
-      ref.on('value', listener);
       this.refs.push({ ref, listener });
+      ref.on('value', listener);
     });
   }
 
   setField(name, value) {
+    debug('set field', name, value);
     this.data = { ...this.data, [name]: value };
     this.flush();
   }
@@ -44,7 +41,7 @@ export class FirebaseStruct extends EventEmitter {
   hasData() {
     for (const name in this.data) {
       if (this.data.hasOwnProperty(name)) {
-        if (this.data[name] === noValue) {
+        if (this.data[name] === NO_VALUE) {
           return false;
         }
       }
@@ -59,10 +56,11 @@ export class FirebaseStruct extends EventEmitter {
   }
 
   close() {
-    this.off('value');
+    debug('close');
     for (const { ref, listener } of this.refs) {
       ref.off('value', listener);
     }
+    this.reset();
   }
 
 }

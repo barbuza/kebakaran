@@ -1,15 +1,15 @@
 import test from 'tape';
 import Firebase from 'firebase';
 
-import { FirebaseList } from '../src/index';
+import { FirebaseList, FirebaseStruct } from '../src/index';
 
 test('FirebaseList', t => {
   t.plan(2);
 
-  const list = new FirebaseList(new Firebase('https://kebakaran-test.firebaseio.com/list'), key => ({
+  const list = new FirebaseList(new Firebase('https://kebakaran-test.firebaseio.com/list'), key => new FirebaseStruct({
     name: new Firebase(`https://kebakaran-test.firebaseio.com/names/${key}`),
     count: new Firebase(`https://kebakaran-test.firebaseio.com/counts/${key}`),
-  }), 'id');
+  }), { instant: false });
 
   let step = 1;
 

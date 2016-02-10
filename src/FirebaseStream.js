@@ -1,12 +1,6 @@
 import { cps } from 'redux-saga';
 import { sagaCbLoose, sagaCbStrict } from './sagaCb';
-
-function snapshotValue(snapshotOrValue) {
-  if (typeof snapshotOrValue === 'object' && typeof snapshotOrValue.val === 'function') {
-    return snapshotOrValue.val();
-  }
-  return snapshotOrValue;
-}
+import { snapshotValue } from './snapshotValue';
 
 export class FirebaseStream {
 

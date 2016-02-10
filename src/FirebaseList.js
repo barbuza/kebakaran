@@ -1,46 +1,49 @@
-import EventEmitter from 'eventemitter3';
+import invariant from 'invariant';
 
-import { FirebaseStruct } from './FirebaseStruct';
+import { Emitter } from './Emitter';
+import { snapshotValue } from './snapshotValue';
+
+const debug = require('debug')('kebakaran:FirebaseList');
 
 const NO_VALUE = Symbol();
 
 const getKey = snapshot => snapshot.key();
 
-export class FirebaseList extends EventEmitter {
+export class FirebaseList extends Emitter {
 
-  keys = [];
-  items = {};
-  values = {};
-
-  constructor(ref, getFields, idField = 'id', instant = false, mapKey = getKey) {
+  constructor(ref, mapChild, { idField = 'id', instant = true, mapKey = getKey } = {}) {
     super();
 
+    invariant(ref, 'FirebaseList first arg is required');
+    invariant(typeof mapChild === 'function', 'FirebaseList second arg must be function');
+
     this.ref = ref;
-    this.getFields = getFields;
+    this.mapChild = mapChild;
     this.idField = idField;
     this.instant = instant;
     this.hasInitialData = !instant;
     this.mapKey = mapKey;
 
-    this.subscribe();
+    this.reset();
+  }
+
+  reset() {
+    this.keys = [];
+    this.items = {};
+    this.values = {};
   }
 
   subscribe() {
     if (this.instant) {
+      debug('subscribe instant');
       this.onValue = ::this.onValue;
       this.ref.on('value', this.onValue);
     } else {
+      debug('subscribe');
       this.onChildAdded = ::this.onChildAdded;
       this.onChildRemoved = ::this.onChildRemoved;
       this.ref.on('child_added', this.onChildAdded);
       this.ref.on('child_removed', this.onChildRemoved);
-    }
-  }
-
-  on(name, listener, context) {
-    super.on(name, listener, context);
-    if (name === 'value' && this.hasData()) {
-      listener.call(context, this.data);
     }
   }
 
@@ -76,19 +79,23 @@ export class FirebaseList extends EventEmitter {
   }
 
   addChild(key) {
-    const item = new FirebaseStruct(this.getFields, key);
+    const item = this.mapChild(key);
 
     this.values[key] = NO_VALUE;
     this.keys.push(key);
-    this.items[key] = item;
 
-    item.on('value', value => {
-      this.onItemValue(key, value);
-    });
+    const listener = value => {
+      this.onItemValue(key, snapshotValue(value));
+    };
+
+    this.items[key] = { item, listener };
+
+    item.on('value', listener);
   }
 
   removeChild(key) {
-    this.items[key].close();
+    const { item, listener } = this.items[key];
+    item.off('value', listener);
 
     delete this.items[key];
     delete this.values[key];
@@ -123,11 +130,12 @@ export class FirebaseList extends EventEmitter {
   }
 
   close() {
-    for (const key of this.keys) {
-      this.items[key].close();
-    }
+    debug('close');
 
-    this.off('value');
+    for (const key of this.keys) {
+      const { item, listener } = this.items[key];
+      item.off('value', listener);
+    }
 
     if (this.instant) {
       this.ref.off('value', this.onValue);
@@ -135,6 +143,8 @@ export class FirebaseList extends EventEmitter {
       this.ref.off('child_added', this.onChildAdded);
       this.ref.off('child_removed', this.onChildRemoved);
     }
+
+    this.reset();
   }
 
 }

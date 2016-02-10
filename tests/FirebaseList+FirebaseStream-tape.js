@@ -3,7 +3,7 @@ import sagaMiddleware from 'redux-saga';
 import { applyMiddleware, createStore } from 'redux';
 
 import RefMock from './RefMock';
-import { FirebaseList, FirebaseStream } from '../src/index';
+import { FirebaseList, FirebaseStream, FirebaseStruct } from '../src/index';
 
 test('FirebaseList+FirebaseStream', t => {
   t.plan(3);
@@ -14,7 +14,11 @@ test('FirebaseList+FirebaseStream', t => {
   };
   const listRef = new RefMock();
 
-  const list = new FirebaseList(listRef, key => ({ name: nameRefs[key] }));
+  const list = new FirebaseList(
+    listRef,
+    key => new FirebaseStruct({ name: nameRefs[key] }),
+    { instant: false }
+  );
   const stream = new FirebaseStream(list);
 
   function* saga() {

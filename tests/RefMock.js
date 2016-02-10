@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3';
+import { Emitter } from '../src/Emitter';
 
 class SnapshotMock {
 
@@ -21,10 +21,27 @@ class SnapshotMock {
 
 }
 
-export default class RefMock extends EventEmitter {
+const NO_VALUE = Symbol();
+
+export default class RefMock extends Emitter {
+
+  data = NO_VALUE;
+
+  subscribe() {
+
+  }
+
+  close() {
+
+  }
+
+  hasData() {
+    return this.data !== NO_VALUE;
+  }
 
   emitValue(val) {
-    this.emit('value', new SnapshotMock(val));
+    this.data = new SnapshotMock(val);
+    this.emit('value', this.data);
   }
 
   emitChildAdded(key) {
