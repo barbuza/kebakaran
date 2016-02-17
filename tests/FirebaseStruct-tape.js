@@ -4,13 +4,13 @@ import asap from 'asap';
 import RefMock from './RefMock';
 import { FirebaseStruct } from '../src/index';
 
-function setup() {
+function setup(mapValue = value => value) {
   const nameRef = new RefMock();
   const countRef = new RefMock();
   const struct = new FirebaseStruct({
     name: nameRef,
     count: countRef,
-  });
+  }, mapValue);
   return { nameRef, countRef, struct };
 }
 
@@ -100,6 +100,45 @@ test('FirebaseStruct basics', t => {
     t.deepEqual(value, {
       name: 'foo',
       count: 2,
+    });
+  });
+});
+
+test('FirebaseStruct mapValue', t => {
+  t.plan(4);
+
+  const { nameRef, countRef, struct } = setup(({ name, count }) => ({ name, count: -count }));
+
+  struct.once('value', value => {
+    t.deepEqual(value, {
+      name: 'foo',
+      count: -1,
+    });
+  });
+
+  nameRef.emitValue('foo');
+  countRef.emitValue(1);
+
+  countRef.emitValue(2);
+
+  struct.once('value', value => {
+    t.deepEqual(value, {
+      name: 'foo',
+      count: -2,
+    });
+  });
+
+  struct.on('value', value => {
+    t.deepEqual(value, {
+      name: 'foo',
+      count: -2,
+    });
+  });
+
+  struct.once('value', value => {
+    t.deepEqual(value, {
+      name: 'foo',
+      count: -2,
     });
   });
 });

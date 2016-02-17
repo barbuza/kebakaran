@@ -3,7 +3,7 @@ import sagaMiddleware, { cps, call } from 'redux-saga';
 import { applyMiddleware, createStore } from 'redux';
 
 import RefMock from './RefMock';
-import { FirebaseStream } from '../src/index';
+import { FirebaseStream, sagaCbEqual } from '../src/index';
 
 test('FirebaseStream next', t => {
   const ref = new RefMock();
@@ -66,4 +66,24 @@ test('FirebaseStream strict', t => {
   ref.emitValue(1);
   ref.emitValue(2);
   ref.emitValue(3);
+});
+
+test('FirebaseStream equal', t => {
+  t.plan(2);
+
+  const ref = new RefMock();
+  const stream = new FirebaseStream(ref, sagaCbEqual);
+
+  function* saga() {
+    t.deepEqual(yield stream.next(), []);
+    yield call(() => new Promise(resolve => setTimeout(resolve, 1)));
+    t.deepEqual(yield stream.next(), [1]);
+    t.end();
+  }
+
+  applyMiddleware(sagaMiddleware(saga))(createStore)(() => null);
+
+  ref.emitValue([]);
+  setTimeout(() => ref.emitValue([]), 50);
+  setTimeout(() => ref.emitValue([1]), 100);
 });

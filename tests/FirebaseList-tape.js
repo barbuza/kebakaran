@@ -18,27 +18,27 @@ test('FirebaseList', t => {
   let step = 1;
   list.on('value', value => {
     switch (step) {
-      case 1:
-        t.deepEqual(value, [], '1: empty intial emit');
-        break;
-      case 2:
-        t.deepEqual(value, [{ id: 'foo', name: 'foo' }],
-          '6: list emits value on first child data');
-        break;
-      case 3:
-        t.deepEqual(value, [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }],
-          '9: list emits second child');
-        break;
-      case 4:
-        t.deepEqual(value, [{ name: 'bar', id: 'bar' }],
-          '10: list emits only second child after first one removed');
-        break;
-      case 5:
-        t.deepEqual(value, [], '13: list emits empty value after second child removed');
-        break;
-      default:
-        /* istanbul ignore next */
-        t.fail();
+    case 1:
+      t.deepEqual(value, [], '1: empty intial emit');
+      break;
+    case 2:
+      t.deepEqual(value, [{ id: 'foo', name: 'foo' }],
+        '6: list emits value on first child data');
+      break;
+    case 3:
+      t.deepEqual(value, [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }],
+        '9: list emits second child');
+      break;
+    case 4:
+      t.deepEqual(value, [{ name: 'bar', id: 'bar' }],
+        '10: list emits only second child after first one removed');
+      break;
+    case 5:
+      t.deepEqual(value, [], '13: list emits empty value after second child removed');
+      break;
+    default:
+      /* istanbul ignore next */
+      t.fail();
     }
     step++;
   });
@@ -86,18 +86,18 @@ test('FirebaseList instant', t => {
   let step = 1;
   list.on('value', value => {
     switch (step) {
-      case 1:
-        t.deepEqual(value, [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }]);
-        break;
-      case 2:
-        t.deepEqual(value, [{ name: 'bar', id: 'bar' }]);
-        break;
-      case 3:
-        t.deepEqual(value, []);
-        break;
-      default:
-        /* istanbul ignore next */
-        t.fail();
+    case 1:
+      t.deepEqual(value, [{ name: 'foo', id: 'foo' }, { name: 'bar', id: 'bar' }]);
+      break;
+    case 2:
+      t.deepEqual(value, [{ name: 'bar', id: 'bar' }]);
+      break;
+    case 3:
+      t.deepEqual(value, []);
+      break;
+    default:
+      /* istanbul ignore next */
+      t.fail();
     }
     step++;
   });

@@ -7,21 +7,24 @@ const debug = require('debug')('kebakaran:FirebaseStruct');
 
 const NO_VALUE = Symbol();
 
+const mapValueIdent = value => value;
+
 export class FirebaseStruct extends Emitter {
 
-  constructor(fields) {
+  constructor(fields, mapValue = mapValueIdent) {
     invariant(fields, 'FirebaseStruct first arg is required');
 
     super();
 
     this.fields = fields;
+    this.mapValue = mapValue;
 
     this.reset();
   }
 
   reset() {
     this.refs = [];
-    this.data = Object.keys(this.fields).reduce((acc, key) => ({ ...acc, [key]: NO_VALUE }), {});
+    this.dataDirty = Object.keys(this.fields).reduce((acc, key) => ({ ...acc, [key]: NO_VALUE }), {});
   }
 
   subscribe() {
@@ -38,14 +41,18 @@ export class FirebaseStruct extends Emitter {
 
   setField(name, value) {
     debug('set field', name, value);
-    this.data = { ...this.data, [name]: value };
+    this.dataDirty = { ...this.dataDirty, [name]: value };
     this.flush();
   }
 
+  get data() {
+    return this.mapValue(this.dataDirty);
+  }
+
   hasData() {
-    for (const name in this.data) {
-      if (this.data.hasOwnProperty(name)) {
-        if (this.data[name] === NO_VALUE) {
+    for (const name in this.dataDirty) {
+      if (this.dataDirty.hasOwnProperty(name)) {
+        if (this.dataDirty[name] === NO_VALUE) {
           return false;
         }
       }
