@@ -24,7 +24,9 @@ export class FirebaseStruct extends Emitter {
 
   reset() {
     this.refs = [];
-    this.dataDirty = Object.keys(this.fields).reduce((acc, key) => ({ ...acc, [key]: NO_VALUE }), {});
+    this.dataDirty = Object.keys(this.fields).reduce(
+      (acc, key) => ({ ...acc, [key]: NO_VALUE }), {}
+    );
   }
 
   subscribe() {
