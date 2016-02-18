@@ -122,7 +122,7 @@ test('sagaCbEqual', t => {
   }, 150);
 
   setTimeout(() => {
-    t.deepEqual(actual, [1, 3, 4]);
+    t.deepEqual(actual, [3, 4]);
     t.end();
   }, 200);
 });

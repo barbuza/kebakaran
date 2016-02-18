@@ -1,5 +1,7 @@
 import invariant from 'invariant';
 import isEqual from 'deep-equal';
+import asap from 'asap';
+import isFunction from 'is-function';
 
 export function sagaCbStrict() {
   let nextCallback = null;
@@ -61,33 +63,29 @@ const NO_VALUE = Symbol();
 
 export function sagaCbEqual() {
   let nextCallback = null;
-  let nextData = null;
+  let nextData = NO_VALUE;
   let lastData = NO_VALUE;
 
-  function listener(data) {
-    if (isEqual(data, lastData)) {
-      return;
-    }
-    lastData = data;
-    if (nextCallback) {
+  function flush() {
+    if (nextData !== NO_VALUE && !isEqual(nextData, lastData) && isFunction(nextCallback)) {
+      lastData = nextData;
+      const dataCopy = nextData;
       const callbackCopy = nextCallback;
+      nextData = NO_VALUE;
       nextCallback = null;
-      nextData = null;
-      callbackCopy(null, data);
-    } else {
-      nextData = data;
+      callbackCopy(null, dataCopy);
     }
+  }
+
+  function listener(data) {
+    nextData = data;
+    asap(flush);
   }
 
   function callback(cb) {
     invariant(nextData || !nextCallback, 'invalid state');
-    if (nextData) {
-      const dataCopy = nextData;
-      nextData = null;
-      cb(null, dataCopy);
-    } else {
-      nextCallback = cb;
-    }
+    nextCallback = cb;
+    asap(flush);
   }
 
   return { callback, listener };

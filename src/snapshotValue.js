@@ -1,7 +1,8 @@
+import isObject from 'is-object';
+import isFunction from 'is-function';
+
 export function snapshotValue(snapshotOrValue) {
-  if (snapshotOrValue
-    && typeof snapshotOrValue === 'object'
-    && typeof snapshotOrValue.val === 'function') {
+  if (isObject(snapshotOrValue) && isFunction(snapshotOrValue.val)) {
     return snapshotOrValue.val();
   }
   return snapshotOrValue;
