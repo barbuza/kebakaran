@@ -84,6 +84,6 @@ export class FirebaseStruct extends Emitter {
 
 }
 
-export function struct(fields) {
-  return new FirebaseStruct(fields);
+export function struct(fields, mapValue) {
+  return new FirebaseStruct(fields, mapValue);
 }
