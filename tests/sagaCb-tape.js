@@ -2,7 +2,8 @@
 
 import test from 'tape';
 import { createStore, applyMiddleware } from 'redux';
-import sagaMiddleware, { cps, call } from 'redux-saga';
+import sagaMiddleware from 'redux-saga';
+import { cps, call } from 'redux-saga/effects';
 
 import { sagaCbLoose, sagaCbStrict, sagaCbEqual } from '../src/index';
 
@@ -31,6 +32,8 @@ test('sagaCbStrict', t => {
 
   runSaga(saga);
 
+  listener(undefined);
+  listener(null);
   listener(1);
   listener(2);
   listener(3);
@@ -48,7 +51,7 @@ test('sagaCbStrict', t => {
   }, 150);
 
   setTimeout(() => {
-    t.deepEqual(actual, [1, 2, 3, 4, 5, 6]);
+    t.deepEqual(actual, [undefined, null, 1, 2, 3, 4, 5, 6]);
     t.end();
   }, 200);
 });
@@ -85,9 +88,17 @@ test('sagaCbLoose', t => {
   }, 150);
 
   setTimeout(() => {
-    t.deepEqual(actual, [1, 3, 4, 5, 6]);
-    t.end();
+    listener(null);
   }, 200);
+
+  setTimeout(() => {
+    listener(undefined);
+  }, 250);
+
+  setTimeout(() => {
+    t.deepEqual(actual, [1, 3, 4, 5, 6, null, undefined]);
+    t.end();
+  }, 300);
 });
 
 test('sagaCbEqual', t => {
@@ -122,7 +133,23 @@ test('sagaCbEqual', t => {
   }, 150);
 
   setTimeout(() => {
-    t.deepEqual(actual, [3, 4]);
-    t.end();
+    listener(null);
   }, 200);
+
+  setTimeout(() => {
+    listener(null);
+  }, 250);
+
+  setTimeout(() => {
+    listener(undefined);
+  }, 300);
+
+  setTimeout(() => {
+    listener(undefined);
+  }, 350);
+
+  setTimeout(() => {
+    t.deepEqual(actual, [3, 4, null, undefined]);
+    t.end();
+  }, 400);
 });

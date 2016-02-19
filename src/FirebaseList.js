@@ -3,6 +3,7 @@ import isFunction from 'is-function';
 
 import { Emitter } from './Emitter';
 import { snapshotValue } from './snapshotValue';
+import { isEmitter } from './isEmitter';
 
 const debug = require('debug')('kebakaran:FirebaseList');
 
@@ -13,7 +14,7 @@ const getKey = snapshot => snapshot.key();
 export class FirebaseList extends Emitter {
 
   constructor(ref, mapChild, { idField = 'id', instant = true, mapKey = getKey } = {}) {
-    invariant(ref, 'FirebaseList first arg is required');
+    invariant(isEmitter(ref), 'FirebaseList first arg must be emitter');
     invariant(isFunction(mapChild), 'FirebaseList second arg must be a function');
     invariant(isFunction(mapKey), 'FirebaseList `mapKey` option must be a function');
 

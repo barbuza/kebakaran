@@ -1,16 +1,18 @@
-import invariant from 'invariant';
-import isEqual from 'deep-equal';
 import asap from 'asap';
 import isFunction from 'is-function';
+
+import { isEqual } from './isEqual';
+
+const NO_VALUE = Symbol('NO_VALUE');
 
 export function sagaCbStrict() {
   let nextCallback = null;
   const queue = [];
+  let callbackCopy;
 
   function listener(data) {
     if (nextCallback) {
-      const callbackCopy = nextCallback;
-      nextCallback = null;
+      [callbackCopy, nextCallback] = [nextCallback, null];
       callbackCopy(null, data);
     } else {
       queue.push(data);
@@ -18,7 +20,6 @@ export function sagaCbStrict() {
   }
 
   function callback(cb) {
-    invariant(queue.length || !nextCallback, 'invalid state');
     if (queue.length) {
       const data = queue.shift();
       cb(null, data);
@@ -32,13 +33,13 @@ export function sagaCbStrict() {
 
 export function sagaCbLoose() {
   let nextCallback = null;
-  let nextData = null;
+  let nextData = NO_VALUE;
+  let dataCopy;
+  let callbackCopy;
 
   function listener(data) {
     if (nextCallback) {
-      const callbackCopy = nextCallback;
-      nextCallback = null;
-      nextData = null;
+      [callbackCopy, nextCallback, nextData] = [nextCallback, null, NO_VALUE];
       callbackCopy(null, data);
     } else {
       nextData = data;
@@ -46,10 +47,8 @@ export function sagaCbLoose() {
   }
 
   function callback(cb) {
-    invariant(nextData || !nextCallback, 'invalid state');
-    if (nextData) {
-      const dataCopy = nextData;
-      nextData = null;
+    if (nextData !== NO_VALUE) {
+      [dataCopy, nextData] = [nextData, NO_VALUE];
       cb(null, dataCopy);
     } else {
       nextCallback = cb;
@@ -59,21 +58,16 @@ export function sagaCbLoose() {
   return { callback, listener };
 }
 
-const NO_VALUE = Symbol();
-
 export function sagaCbEqual() {
   let nextCallback = null;
   let nextData = NO_VALUE;
   let lastData = NO_VALUE;
+  let callbackCopy;
 
   function flush() {
     if (nextData !== NO_VALUE && !isEqual(nextData, lastData) && isFunction(nextCallback)) {
-      lastData = nextData;
-      const dataCopy = nextData;
-      const callbackCopy = nextCallback;
-      nextData = NO_VALUE;
-      nextCallback = null;
-      callbackCopy(null, dataCopy);
+      [callbackCopy, nextCallback, lastData, nextData] = [nextCallback, null, nextData, NO_VALUE];
+      callbackCopy(null, lastData);
     }
   }
 
@@ -83,7 +77,6 @@ export function sagaCbEqual() {
   }
 
   function callback(cb) {
-    invariant(nextData || !nextCallback, 'invalid state');
     nextCallback = cb;
     asap(flush);
   }

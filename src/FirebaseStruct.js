@@ -1,7 +1,9 @@
 import invariant from 'invariant';
+import isFunction from 'is-function';
 
 import { Emitter } from './Emitter';
 import { snapshotValue } from './snapshotValue';
+import { isEmitter } from './isEmitter';
 
 const debug = require('debug')('kebakaran:FirebaseStruct');
 
@@ -12,7 +14,11 @@ const mapValueIdent = value => value;
 export class FirebaseStruct extends Emitter {
 
   constructor(fields, mapValue = mapValueIdent) {
-    invariant(fields, 'FirebaseStruct first arg is required');
+    Object.keys(fields).forEach(name =>
+      invariant(isEmitter(fields[name]), 'FirebaseStruct fields values must be emitters')
+    );
+
+    invariant(isFunction(mapValue), 'FirebaseStruct second arg must be a function');
 
     super();
 

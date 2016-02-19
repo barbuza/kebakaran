@@ -1,5 +1,6 @@
 import test from 'tape';
-import sagaMiddleware, { cps, call } from 'redux-saga';
+import sagaMiddleware from 'redux-saga';
+import { cps, call } from 'redux-saga/effects';
 import { applyMiddleware, createStore } from 'redux';
 
 import RefMock from './RefMock';

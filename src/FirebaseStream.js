@@ -1,14 +1,15 @@
 import invariant from 'invariant';
-import { cps } from 'redux-saga';
+import { cps } from 'redux-saga/effects';
 import isFunction from 'is-function';
 
 import { sagaCbLoose, sagaCbStrict } from './sagaCb';
 import { snapshotValue } from './snapshotValue';
+import { isEmitter } from './isEmitter';
 
 export class FirebaseStream {
 
   constructor(ref, loose = true) {
-    invariant(ref, 'FirebaseStream first arg is required');
+    invariant(isEmitter(ref), 'FirebaseStream first arg must be emitter');
 
     let makeConstructor;
     if (isFunction(loose)) {
