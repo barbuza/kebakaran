@@ -1,6 +1,6 @@
 {
   "name": "kebakaran",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "high level utilities for firebase interaction",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "license": "ISC",
   "peerDependencies": {
-    "redux-saga": "^0.8.2"
+    "redux-saga": "^0.9.5"
   },
   "devDependencies": {
     "asap": "^2.0.3",
@@ -38,7 +38,7 @@
     "firebase": "^2.4.1",
     "nyc": "^5.6.0",
     "redux": "^3.3.1",
-    "redux-saga": "^0.8.2",
+    "redux-saga": "^0.9.5",
     "tape": "^4.4.0"
   },
   "dependencies": {
