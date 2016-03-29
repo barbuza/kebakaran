@@ -123,7 +123,7 @@ export class FirebaseList extends Emitter {
     if (this.idField) {
       return this.keys.map(key => ({ ...this.values[key], [this.idField]: key }));
     }
-    return this.keys.map(key => ({ ...this.values[key] }));
+    return this.keys.map(key => this.values[key]);
   }
 
   flush() {
