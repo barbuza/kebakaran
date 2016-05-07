@@ -88,3 +88,23 @@ test('FirebaseStream equal', t => {
   setTimeout(() => ref.emitValue([]), 50);
   setTimeout(() => ref.emitValue([1]), 100);
 });
+
+test('FirebaseStream map', t => {
+  t.plan(2);
+
+  const ref = new RefMock();
+  const stream = new FirebaseStream(ref, sagaCbEqual, x => x > 2 ? x : 1);
+
+  function* saga() {
+    t.deepEqual(yield stream.next(), 1);
+    yield call(() => new Promise(resolve => setTimeout(resolve, 1)));
+    t.deepEqual(yield stream.next(), 3);
+    t.end();
+  }
+
+  applyMiddleware(sagaMiddleware(saga))(createStore)(() => null);
+
+  ref.emitValue(1);
+  setTimeout(() => ref.emitValue(2), 50);
+  setTimeout(() => ref.emitValue(3), 100);
+});

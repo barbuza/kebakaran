@@ -8,7 +8,7 @@ import { isEmitter } from './isEmitter';
 
 export class FirebaseStream {
 
-  constructor(ref, loose = true) {
+  constructor(ref, loose = true, mapValue = x => x) {
     invariant(isEmitter(ref), 'FirebaseStream first arg must be emitter');
 
     let makeConstructor;
@@ -21,7 +21,7 @@ export class FirebaseStream {
     }
 
     const { listener, callback } = makeConstructor();
-    this.listener = val => listener(snapshotValue(val));
+    this.listener = val => listener(mapValue(snapshotValue(val)));
     this.callback = callback;
 
     this.ref = ref;
