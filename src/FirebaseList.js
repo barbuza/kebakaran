@@ -9,7 +9,7 @@ const debug = require('debug')('kebakaran:FirebaseList');
 
 const NO_VALUE = Symbol();
 
-const getKey = snapshot => snapshot.key();
+const getKey = snapshot => snapshot.key;
 
 export class FirebaseList extends Emitter {
 

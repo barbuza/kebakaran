@@ -11,7 +11,7 @@ class SnapshotMock {
     return this._val;
   }
 
-  key() {
+  get key() {
     return this._key;
   }
 
